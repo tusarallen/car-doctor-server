@@ -41,14 +41,13 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const options = {
-        projection: { title: 1, price: 1, service_id: 1 , img:1 },
+        projection: { title: 1, price: 1, service_id: 1, img: 1 },
       };
       const result = await serviceCollection.findOne(query, options);
       res.send(result);
     });
 
     // Bookings
-
     // send some data in client side using query
     app.get("/bookings", async (req, res) => {
       console.log(req.query.email);
@@ -66,6 +65,29 @@ async function run() {
       console.log(booking);
       //  store data in mongodb
       const result = await bookingCollection.insertOne(booking);
+      res.send(result);
+    });
+
+    // send specific data to update data in client side
+    app.patch("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedBooking = req.body;
+      console.log(updatedBooking);
+      const updateDoc = {
+        $set: {
+          status: updatedBooking.status,
+        },
+      };
+      const result = await bookingCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // delete raw data in bookingRaw
+    app.delete("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingCollection.deleteOne(query);
       res.send(result);
     });
 
