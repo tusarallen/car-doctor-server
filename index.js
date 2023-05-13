@@ -30,6 +30,17 @@ async function run() {
     const serviceCollection = client.db("carDoctorDB").collection("Services");
     const bookingCollection = client.db("carDoctorDB").collection("Bookings");
 
+    // jwt
+    app.post("/jwt", (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "1h",
+      });
+      res.send({ token });
+    });
+
+    // services routes
     // send all services data to the client
     app.get("/services", async (req, res) => {
       const cursor = serviceCollection.find();
@@ -48,10 +59,11 @@ async function run() {
       res.send(result);
     });
 
-    // Bookings
+    // Bookings routes
     // send some data in client side using query
     app.get("/bookings", async (req, res) => {
-      console.log(req.query.email);
+      console.log("came back after verify");
+
       let query = {};
       if (req.query?.email) {
         query = { email: req.query.email };
